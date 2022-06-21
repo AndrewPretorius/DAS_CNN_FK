@@ -5,6 +5,8 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import BatchNormalization
+from keras.utils import np_utils, plot_model
+from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import SGD
 from keras.metrics import Precision, Recall, BinaryAccuracy
 import pandas as pd
