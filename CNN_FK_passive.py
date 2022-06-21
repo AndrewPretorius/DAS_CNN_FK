@@ -5,23 +5,15 @@ from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers import BatchNormalization
-from keras.utils import np_utils, plot_model
-from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import SGD
 from keras.metrics import Precision, Recall, BinaryAccuracy
-from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-from sklearn import preprocessing
 import pandas as pd
 import random
 import tensorflow as tf
-from numpy.fft import fft2, fftshift
-from scipy.ndimage import median_filter
 from datetime import datetime
-from keras.regularizers import l2
-from sklearn.model_selection import StratifiedKFold, KFold
+from sklearn.model_selection import KFold
 
-
+# Function to load sample ids and labels
 def load_samples(csv_file_path):
     data = pd.read_csv(csv_file_path)
     file_names = list(data.iloc[:,0])
@@ -32,10 +24,12 @@ def load_samples(csv_file_path):
         samples.append([samp,lab])
     return samples
 
+# Load csv of sample ids and labels
 train_samples = load_samples('/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/labels_0.25all.csv')
 #test_samples = load_samples('/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.5s_FK_windows/labels/labels_test.csv')
 #val_samples = load_samples('/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/labels_0.25val.csv')
 
+# Custom batch generator to load samples in batches and apply preprocessing
 def np_batch_generator(samples, batch_size=16, shuffle_data=True):
     """
     #Yields the next training batch.
@@ -92,6 +86,7 @@ def np_batch_generator(samples, batch_size=16, shuffle_data=True):
             # yield training batch            
             yield X, Y
 
+# Data in FK space is very low resolution so 
 train_generator = np_batch_generator(train_samples, batch_size=len(train_samples))#, shuffle_data=False)
 X, Y = next(train_generator)
 
