@@ -14,6 +14,7 @@ import random
 import tensorflow as tf
 from datetime import datetime
 from sklearn.model_selection import KFold
+import matplotlib.pyplot as plt
 
 # Function to load sample ids and labels
 def load_samples(csv_file_path):
@@ -88,10 +89,13 @@ def np_batch_generator(samples, batch_size=16, shuffle_data=True):
             # yield training batch            
             yield X, Y
 
-# Data in FK space is very low resolution so 
+# Data in FK space is very low resolution so load all samples as one batch
 train_generator = np_batch_generator(train_samples, batch_size=len(train_samples))#, shuffle_data=False)
+
+# Split into data (X) and labels (Y)
 X, Y = next(train_generator)
 
+# This is actual batch size used for training
 batch_size = 32
 
 StepSize_T=len(train_samples)//batch_size
@@ -104,18 +108,20 @@ filter_size = 15
 pool_size = 2
 
 # k-fold cross valication
-kfold = KFold(n_splits=5, shuffle=True, random_state=1)
+kfold = KFold(n_splits=10, shuffle=True, random_state=1)
 cvscores = []
+i = 0
 for train, test in kfold.split(X, Y):
     model = Sequential([
       Conv2D(filters=64, kernel_size=9, input_shape=(36,81, 1),padding='same', activation='relu'),
              #kernel_regularizer=l2(0.001), bias_regularizer=l2(0.001)),
       BatchNormalization(),
       MaxPooling2D(pool_size=pool_size),
-      #Conv2D(16, 3, padding='same', activation='tanh'),
+      
+      Conv2D(16, 3, padding='same', activation='tanh'),
              #kernel_regularizer=l2(0.001), bias_regularizer=l2(0.001)),
-      #BatchNormalization(),
-      #MaxPooling2D(pool_size=pool_size),
+      BatchNormalization(),
+      MaxPooling2D(pool_size=pool_size),
     
       #Conv2D(16, 3, activation='tanh',padding='same'),
       #Conv2D(16, 9,activation='tanh',padding='same'),
@@ -131,13 +137,13 @@ for train, test in kfold.split(X, Y):
       #MaxPooling2D(pool_size=pool_size),
     
       Flatten(),
-      Dense(64, activation='tanh'),#kernel_regularizer=l2(0.001), bias_regularizer=l2(0.001)),  
+      Dense(64, activation='relu'),#kernel_regularizer=l2(0.001), bias_regularizer=l2(0.001)),  
       Dropout(0.5),
       Dense(2, activation='sigmoid'),
     ])
 
     # Compile model
-    opt = SGD(lr=0.001, momentum=0, nesterov=False)
+    opt = SGD(lr=0.0001, momentum=0.9, nesterov=False)
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,
                   #metrics=['accuracy'])
@@ -149,22 +155,51 @@ for train, test in kfold.split(X, Y):
     
     startTime = datetime.now()
     
+    val_data = X[test], Y[test]
+    
     tf.autograph.set_verbosity(0)
     history = model.fit(X[train], Y[train],
                         batch_size=batch_size, 
-                        epochs=50, 
-                        verbose=1)
-                        #steps_per_epoch=StepSize_T)
-                        #validation_data=val_generator,
+                        epochs=100, 
+                        verbose=1,
+                        #steps_per_epoch=StepSize_T
+                        validation_data=val_data)
                         #validation_steps=StepSize_V,
                         #callbacks=stop_early)
     
     #print('Time taken to train model = ' + str(datetime.now() - startTime))
     
+    
+    
 	# evaluate the model
     scores = model.evaluate(X[test], Y[test], verbose=0)
     print("%s: %.3f%%" % (model.metrics_names[1], scores[1]*100))
     cvscores.append(scores[1] * 100)
+    
+    plt.figure(i)
+    loss_train = history.history['loss']
+    loss_val = history.history['val_loss']
+    epochs = history.params['epochs']
+    plt.plot(loss_train, 'g', label='Training loss')
+    plt.plot(loss_val, 'b', label='Validation loss')
+    plt.title('Training and validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+    
+    plt.figure(i+1)
+    loss_train = history.history['binary_accuracy']
+    loss_val = history.history['val_binary_accuracy']
+    plt.plot(loss_train, 'g', label='Training accuracy')
+    plt.plot(loss_val, 'b', label='Validation accuracy')
+    plt.title('Training and validation accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.show()
+    
+    i = i+2
     
 print("%.2f%% (+/- %.2f%%)" % (np.mean(cvscores), np.std(cvscores)))
 

@@ -26,7 +26,7 @@ for i in range(len(file_list1)):
 """
 # correct rest of files and append to new_labels
 
-path2 = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/new_negative/'
+path2 = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/new_labels_27th/'
 file_list2 = os.listdir(path2)
 
 new_labels = pd.DataFrame(columns=['Filename','Label'])
@@ -36,10 +36,10 @@ for i in range(len(file_list2)):
     data2 = pd.read_csv(path2+file_list2[i],names=["Filename","Label"])
     labels_raw = labels_raw.append(data2, ignore_index = True)
     data2.Filename[0] = data2.Filename[0][:96] + str("%05.2f" % (np.float(data2.Filename[0][96:101]))) + ".npy"
-    #data2.Filename[1] = data2.Filename[1][:96] + str("%05.2f" % (np.float(data2.Filename[1][96:101]))) + ".npy"
+    data2.Filename[1] = data2.Filename[1][:96] + str("%05.2f" % (np.float(data2.Filename[1][96:101]))) + ".npy"
     new_labels = new_labels.append(data2, ignore_index = True)
     
-new_labels.to_csv('/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/labels_negative_new2.csv')
+new_labels.to_csv('/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/new_labels_22ndJune.csv')
 
 """
 ### Convert negative label list to 0.25s

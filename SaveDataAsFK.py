@@ -125,7 +125,7 @@ samp_rate = 4000
 #ch_max = 1366
 
 # size and window_size of rolling window
-window_size_s = 0.5 #window size in seconds
+window_size_s = 0.25 #window size in seconds
 window_size = int(samp_rate*window_size_s) # window size in samples
 
 no_of_files = 120 # number of files to use (each file = 30s, 120 files = 1 hour of data)
