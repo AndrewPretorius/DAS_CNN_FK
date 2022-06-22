@@ -40,9 +40,9 @@ def np_batch_generator(samples, batch_size=16, shuffle_data=True):
 
         random.shuffle(samples)
 
-        # Get index to start each batch: [0, batch_size, 2*batch_size, ..., max multiple of batch_size <= num_samples]
+        # Get index to start each batch:
         for offset in range(0, num_samples, batch_size):
-            # Get the samples you'll use in this batch
+            # Get samples for batch
             batch_samples = samples[offset:offset+batch_size]
 
             # Initialise X and Y lists for this batch
@@ -58,8 +58,6 @@ def np_batch_generator(samples, batch_size=16, shuffle_data=True):
                 
                 #convert dtype
                 window = window.astype('float32')
-                # expand dimensions for input
-                # window = np.expand_dims(window,axis=2)
                 
                 label = np_utils.to_categorical(label, 2)
                 
@@ -124,7 +122,7 @@ for train, test in kfold.split(X, Y):
       #MaxPooling2D(pool_size=pool_size),
     
       Flatten(),
-      Dense(64, activation='relu'),#kernel_regularizer=l2(0.001), bias_regularizer=l2(0.001)),  
+      Dense(16, activation='relu'),#kernel_regularizer=l2(0.001), bias_regularizer=l2(0.001)),  
       Dropout(0.5),
       Dense(2, activation='sigmoid'),
     ])
@@ -141,7 +139,7 @@ for train, test in kfold.split(X, Y):
     
     startTime = datetime.now()
     
-    val_data = X[test], Y[test]
+    #val_data = X[test], Y[test]
     
     tf.autograph.set_verbosity(0)
     history = model.fit(X[train], Y[train],
@@ -149,13 +147,11 @@ for train, test in kfold.split(X, Y):
                         epochs=100, 
                         verbose=1,
                         #steps_per_epoch=StepSize_T
-                        validation_data=val_data)
+                        validation_data= (X[test], Y[test]))
                         #validation_steps=StepSize_V,
                         #callbacks=stop_early)
     
     #print('Time taken to train model = ' + str(datetime.now() - startTime))
-    
-    
     
 	# evaluate the model
     scores = model.evaluate(X[test], Y[test], verbose=0)

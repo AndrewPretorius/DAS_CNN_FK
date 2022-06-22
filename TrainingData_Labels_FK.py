@@ -22,9 +22,6 @@ ns = 120000
 
 # useful channels
 ch_min = 322
-#ch_min = 372
-#ch_min = 722
-#ch_max = 822
 ch_max = 1322
 
 # define bandpass filter (for visualisation)
@@ -39,15 +36,7 @@ bandpass_filt = butter(order, [low,high], btype='band', analog=False, output='so
 
 labels = pd.read_csv("/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/new_labels_27th/labels_all_0.5.csv")
 
-
-# specify location for training data folders to be created and the data stored
-#folder_location = input("Please specify a full path for the directory to contain training data (2 new directories will be created): ")
-
 folder_location = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows'
-#os.mkdir(folder_location+"/true")
-#os.mkdir(folder_location+"/false")
-#os.mkdir(folder_location+"/other")
-#os.mkdir(folder_location+"/labels")
 
 # size and window_size of rolling window
 window_size_s = 0.25 #window size in seconds
@@ -62,7 +51,6 @@ for j in range(6011, len(labels)):
     file_id = labels.Filename[j][80:92]
     window_id = np.float(labels.Filename[j][94:98])
     filename = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/local_data/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
-    #filename = '/home/ee16a2p/Documents/PhD/DATA/Greenland/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
     #filename = '/run/media/ee16a2p/Seagate Expansion Drive/Greenland Part 1/4kHz/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
     data_raw = read_SEGY(filename, n_ch, ns)   # read data
     data_raw = data_raw[ch_min:ch_max,:]           # trim data
@@ -108,27 +96,4 @@ for j in range(6011, len(labels)):
         window_number = window_number+1
         plt.close() #close plot so next window can be shownsavetxt(folder_location+'/labels/labels'+"_"+str(UTCDateTime(precision=0))+'.csv', new_labels, delimiter=',', fmt='%s')
     savetxt(folder_location+'/labels/new_labels_27th/labels_'+"F"+str(file_id)+"_"+str("%05.2f" % (window_id+(window_number*window_size_s)))+'.csv', new_labels, delimiter=',', fmt='%s')
-
-#with open("/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_windows/labels.txt", "wb") as fp:   #Pickling
-#    pickle.dump(labels, fp)
-
-""" TEST TRAIN SPLIT
-import splitfolders
-split_folders.ratio('Data', output="output", seed=1337, fixed=(100, 100), oversample=False, group_prefix=None)
-
-DELETE EXCESS FILES FROM FALSE
-from random import sample
-
-files = os.listdir('path/to/your/folder')
-for file in sample(files,11):
-    os.remove(file)
-
-"""
-
-
-
-
-
-
-
 
