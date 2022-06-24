@@ -34,7 +34,7 @@ high = highcut/nyq
 order = 3
 bandpass_filt = butter(order, [low,high], btype='band', analog=False, output='sos')
 
-labels = pd.read_csv("/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/new_labels_27th/labels_all_0.5.csv")
+labels = pd.read_csv("/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/labels/labels_all_0.5.csv")
 
 folder_location = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows'
 
@@ -44,12 +44,12 @@ window_size = int(samp_rate*window_size_s) # window size in samples
 downsample_factor = 4 # can downsample to save memory and time
 no_of_files = 120 # number of files to use (each file = 30s, 120 files = 1 hour of data)
 
-for j in range(6011, len(labels)):
+for j in range(739, len(labels)):
     
     new_labels = [] # initialise empty list of labels
     # Full path of segy data file
-    file_id = labels.Filename[j][80:92]
-    window_id = np.float(labels.Filename[j][94:98])
+    file_id = labels.Filename[j][81:93]
+    window_id = np.float(labels.Filename[j][95:99])
     filename = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/local_data/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
     #filename = '/run/media/ee16a2p/Seagate Expansion Drive/Greenland Part 1/4kHz/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
     data_raw = read_SEGY(filename, n_ch, ns)   # read data
