@@ -44,14 +44,14 @@ window_size = int(samp_rate*window_size_s) # window size in samples
 downsample_factor = 4 # can downsample to save memory and time
 no_of_files = 120 # number of files to use (each file = 30s, 120 files = 1 hour of data)
 
-for j in range(739, len(labels)):
+for j in range(8473, len(labels)):
     
     new_labels = [] # initialise empty list of labels
     # Full path of segy data file
-    file_id = labels.Filename[j][81:93]
-    window_id = np.float(labels.Filename[j][95:99])
-    filename = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/local_data/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
-    #filename = '/run/media/ee16a2p/Seagate Expansion Drive/Greenland Part 1/4kHz/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
+    file_id = labels.Filename[j][80:92]
+    window_id = np.float(labels.Filename[j][94:98])
+    #filename = '/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/local_data/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
+    filename = '/run/media/ee16a2p/Seagate Expansion Drive/Greenland Part 1/4kHz/Greenland_iDAS15040_ContinuousAQ_'+file_id+'.sgy'
     data_raw = read_SEGY(filename, n_ch, ns)   # read data
     data_raw = data_raw[ch_min:ch_max,:]           # trim data
     
@@ -95,5 +95,5 @@ for j in range(739, len(labels)):
             new_labels.append(tuple(("/home/ee16a2p/Documents/PhD/DATA/passive_cnn_data/0.25s_FK_windows/samples/other/F"+str(file_id)+"_W"+str("%05.2f" % (window_id+(window_number*window_size_s))),2))) # append labels filename
         window_number = window_number+1
         plt.close() #close plot so next window can be shownsavetxt(folder_location+'/labels/labels'+"_"+str(UTCDateTime(precision=0))+'.csv', new_labels, delimiter=',', fmt='%s')
-    savetxt(folder_location+'/labels/new_labels_27th/labels_'+"F"+str(file_id)+"_"+str("%05.2f" % (window_id+(window_number*window_size_s)))+'.csv', new_labels, delimiter=',', fmt='%s')
+    savetxt(folder_location+'/labels/new_labels28jun/labels_'+"F"+str(file_id)+"_"+str("%05.2f" % (window_id+(window_number*window_size_s)))+'.csv', new_labels, delimiter=',', fmt='%s')
 

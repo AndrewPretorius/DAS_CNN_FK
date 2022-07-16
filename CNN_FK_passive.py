@@ -78,7 +78,7 @@ def np_batch_generator(samples, batch_size=16, shuffle_data=True):
             # yield training batch            
             yield X, Y
 
-# Data in FK space is very low resolution so load all samples as one batch
+# Data in FK space is small so load all samples as one batch
 train_generator = np_batch_generator(train_samples, batch_size=len(train_samples))#, shuffle_data=False)
 
 # Split into data (X) and labels (Y)
